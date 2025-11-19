@@ -1,0 +1,73 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+    display: flex;
+    color: green;
+    justify-content: center;
+    border: 4px solid cornflowerblue;
+    background-color: rgb(228, 228, 61);
+}
+
+#about-problem {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-bottom: 50px;
+}
+
+#about-solution {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-bottom: 50px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    background-color: rgb(69, 139, 69);
+    border: 4px solid cornflowerblue;
+}
+
+.item {
+    padding: 50px;
+    font-size: 25px;
+    font-family: sans-serif;
+    color: navy;
+}
+
+h2 {
+    font-family: Verdana;
+    border: 4px solid cornflowerblue;
+    color: black;
+    background-color: rgb(69, 139, 69);
+}
+
+#about-cwi {
+    display: flex;
+    flex-direction: column;
+}
+
+#about-roi {
+    display: flex;
+    padding-bottom: 50px;
+}
+
+#exampleCalculation {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 50px;
+}
+
+
+p {
+    font-family: Cambria;
+    color: black;
+}
+
+#map { height: 180px; }
