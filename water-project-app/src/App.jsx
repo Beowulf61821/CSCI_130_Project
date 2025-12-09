@@ -56,13 +56,21 @@ function App() {
   const bcRatio = npvSecond / npvFirst;
   const roiVal = roi(totalEstimate, roiBenefitValue, loanDuration);
 
-  const fetchSoil = async () => {
+  const fetchSoil = async (bounds) => {
     try {
-      const response = await axios.get("http://localhost:5000/soil");
+      const response = await axios.get("http://localhost:5000/soil", {
+        params: {
+          lat1: bounds[0][0],
+          lng1: bounds[0][1],
+          lat2: bounds[1][0],
+          lng2: bounds[1][1]
+        }
+      });
+      console.log("Backend response:", response.data);
       setSoil(response.data);
-    }
-    catch {
-      console.error("Error fetching soil:", err);
+    } 
+    catch (err) {
+      console.error("Error sending to backend:", err);
     }
   };
 
@@ -101,20 +109,6 @@ function App() {
         }
         rectangle = L.rectangle(bounds, {color: "blue"}).addTo(map);
         console.log("Rectangle corners:", bounds);
-        try {
-          const response = await axios.get("http://localhost:5000/soil", {
-            params: {
-              lat1: bounds[0][0],
-              lng1: bounds[0][1],
-              lat2: bounds[1][0],
-              lng2: bounds[1][1]
-            }
-          });
-          console.log("Backend response:", response.data);
-        } 
-        catch (err) {
-          console.error("Error sending to backend:", err);
-        }
         fetchSoil(bounds);
         points = [];
       }
@@ -306,10 +300,7 @@ function App() {
         <p>B/C Ratio: {bcRatio}</p>
         <p>ROI: {roiVal}%</p>
         <div id="map" style={{height: "180px"}}></div>
-        <div>
-          <button onClick={fetchSoil}>Get Soil Data</button>
-          <p>Soil Data: {soil}</p>
-        </div>
+        <p>Soil Data: {soil}</p>
       </section>
       <section id="exampleCalculation">
         <h2>Example Calculation</h2>
