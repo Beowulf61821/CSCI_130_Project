@@ -58,7 +58,7 @@ function App() {
 
   const fetchSoil = async (bounds) => {
     try {
-      const response = await axios.get("http://localhost:5000/soil", {
+      const response = await axios.get("https://csci-130-project.onrender.com/soil", {
         params: {
           lat1: bounds[0][0],
           lng1: bounds[0][1],
