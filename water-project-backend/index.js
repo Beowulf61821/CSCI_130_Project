@@ -1,9 +1,24 @@
+require('dotenv').config()
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
 const xml2js = require("xml2js");
+const mongoose = require("mongoose");
 
 const app = express();
+
+const soilSchema = new mongoose.Schema(
+  {
+    soilType: String
+  }
+)
+
+//mongoose.connect(process.env.MONGODB_URI)
+
+const PORT = process.env.PORT || 5000
+const Soil = mongoose.model("Soil", soilSchema)
+
+app.use(express.static("dist"));
 app.use(express.json());
 app.use(cors());
 
@@ -50,15 +65,21 @@ app.get("/", (_req, res) => res.send("Soil API running"));
 
 app.get("/soil", async (_req, res) => {
   try {
+    const {lat1, lat2, lng1, lng2} = _req.query;
+
+    if(!lat1 || !lat2 || !lng1 || !lng2) {
+      return res.status(400).json({ error: "Missing coordinates" });
+    }
+    console.log(lat1, lng1, lat2, lng2);
     // Hard coded 40 acres in NW of Fresno (lon, lat). 
 	// GeoJSON needs the ring closed so make sure the first and last entries match.
 	// Retrieve real values from a map api.
     const ring = [
-      [-119.7178, 36.7508],
-      [-119.7130, 36.7508],
-      [-119.7130, 36.7488],
-      [-119.7178, 36.7488],
-      [-119.7178, 36.7508] // close ring
+      [Number(lng1), Number(lat1)],
+      [Number(lng2), Number(lat1)],
+      [Number(lng2), Number(lat2)],
+      [Number(lng1), Number(lat2)],
+      [Number(lng1), Number(lat1)] // close ring
     ]
     // Build GeoJSON (FeatureCollection is recommended; properties can be used with FILTER later)
     const geojson = {
@@ -198,4 +219,4 @@ app.get("/soil", async (_req, res) => {
 });
 
 // Begin lisining on port 5000 and report server running
-app.listen(5000, () => console.log("Server running on port 5000"));
+app.listen(PORT, () => console.log("Server running on port 5000"));
