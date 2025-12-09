@@ -25,6 +25,7 @@ function App() {
   const [rechargeWaterCost, setRechargeWaterCost] = useState(0);
   const [storedWaterValue, setStoredWaterValue] = useState(0);
   const [om, setOM] = useState(0);
+  const [clicks, setClicks] = useState([]);
 
   const area = 0.25;
   const perimeter = 10560;
@@ -58,7 +59,8 @@ function App() {
       L.DomUtil.get("map")._leaflet_id = null;
     }
     // Initialize the map
-    const map = L.map("map").setView([51.505, -0.09], 13);
+    const map = L.map("map").setView([36.8137, -119.7462], 13);
+    map.current = map;
 
     // Add OpenStreetMap tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -67,25 +69,33 @@ function App() {
         '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
     }).addTo(map);
 
+    let points = [];
+    let rectangle = null;
 
-    var rectangle = L.polygon([
-      [51.509, -1],
-      [51.509, 0],
-      [51.51, -1],
-      [51.51, 0]
-    ]).addTo(map);
+    function onClick(e) {
+      points.push(e.latlng);
 
-    rectangle.bindPopup();
+      if(points.length === 2) {
+        const first = points[0];
+        const second = points[1];
 
-    var popup = L.popup();
+        const bounds = [
+          [first.lat, first.lng],
+          [second.lat, second.lng],
+        ];
 
-    function onMapClick(e) {
-      popup
-        .setLatLng(e.latlng)
+        if(rectangle) {
+          map.removeLayer(rectangle);
+        }
+        rectangle = L.rectangle(bounds, {color: "blue"}).addTo(map);
+        console.log("Rectangle corners:", bounds);
+        points = [];
+      }
     }
+    map.on('click', onClick);
 
-    map.on('click', onMapClick);
   }, []);
+
 
 
   function costFunc(total, cost, interest, years) {
