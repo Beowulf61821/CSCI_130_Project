@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
+import axios from 'axios';
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import './App.css'
@@ -26,6 +27,7 @@ function App() {
   const [storedWaterValue, setStoredWaterValue] = useState(0);
   const [om, setOM] = useState(0);
   const [clicks, setClicks] = useState([]);
+  const [soil, setSoil] = useState([]);
 
   const area = 0.25;
   const perimeter = 10560;
@@ -54,6 +56,16 @@ function App() {
   const bcRatio = npvSecond / npvFirst;
   const roiVal = roi(totalEstimate, roiBenefitValue, loanDuration);
 
+  const fetchSoil = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/soil");
+      setSoil(response.data);
+    }
+    catch {
+      console.error("Error fetching soil:", err);
+    }
+  };
+
   useEffect(() => {
     if (L.DomUtil.get("map") !== null) {
       L.DomUtil.get("map")._leaflet_id = null;
@@ -72,7 +84,7 @@ function App() {
     let points = [];
     let rectangle = null;
 
-    function onClick(e) {
+    async function onClick(e) {
       points.push(e.latlng);
 
       if(points.length === 2) {
@@ -89,6 +101,21 @@ function App() {
         }
         rectangle = L.rectangle(bounds, {color: "blue"}).addTo(map);
         console.log("Rectangle corners:", bounds);
+        try {
+          const response = await axios.get("http://localhost:5000/soil", {
+            params: {
+              lat1: bounds[0][0],
+              lng1: bounds[0][1],
+              lat2: bounds[1][0],
+              lng2: bounds[1][1]
+            }
+          });
+          console.log("Backend response:", response.data);
+        } 
+        catch (err) {
+          console.error("Error sending to backend:", err);
+        }
+        fetchSoil(bounds);
         points = [];
       }
     }
@@ -279,6 +306,10 @@ function App() {
         <p>B/C Ratio: {bcRatio}</p>
         <p>ROI: {roiVal}%</p>
         <div id="map" style={{height: "180px"}}></div>
+        <div>
+          <button onClick={fetchSoil}>Get Soil Data</button>
+          <p>Soil Data: {soil}</p>
+        </div>
       </section>
       <section id="exampleCalculation">
         <h2>Example Calculation</h2>

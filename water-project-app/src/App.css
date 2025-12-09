@@ -64,7 +64,11 @@ h2 {
     padding-bottom: 50px;
 }
 
-
+button {
+    border: black;
+    color: black;
+    background-color: rgb(69, 139, 69);
+}
 p {
     font-family: Cambria;
     color: black;
